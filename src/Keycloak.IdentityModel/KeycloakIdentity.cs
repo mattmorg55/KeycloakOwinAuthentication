@@ -420,16 +420,16 @@ namespace Keycloak.IdentityModel
 			await _refreshLock.WaitAsync();
 			try
 			{
-			    // Check to update cached claims, but not if refresh token is missing (as in bearer mode)
-			    if ((_kcClaims == null || _accessToken.ValidTo <= DateTime.UtcNow) && _refreshToken != null)
-			    {
-			        // Validate refresh token expiration
-			        if (_refreshToken.ValidTo <= DateTime.UtcNow)
-			            throw new Exception("Both the access token and the refresh token have expired");
+				// Check to update cached claims, but not if refresh token is missing (as in bearer mode)
+				if ((_kcClaims == null || _accessToken.ValidTo <= DateTime.UtcNow) && _refreshToken != null)
+				{
+					// Validate refresh token expiration
+					if (_refreshToken.ValidTo <= DateTime.UtcNow)
+						throw new Exception("Both the access token and the refresh token have expired");
 
-			        // Load new identity from token endpoint via refresh token
-			        await RefreshIdentity(_refreshToken.RawData);
-			    }
+					// Load new identity from token endpoint via refresh token
+					await RefreshIdentity(_refreshToken.RawData);
+				}
 				return GetCurrentClaims();
 			}
 			finally
