@@ -13,11 +13,11 @@ namespace Keycloak.IdentityModel.Utilities
 	internal class KeycloakTokenHandler : JwtSecurityTokenHandler
 	{
 
-		public bool TryValidateToken(string jwt, IKeycloakParameters options, OidcDataManager uriManager, out SecurityToken rToken)
+		public bool TryValidateToken(string jwt, IKeycloakParameters options, OidcDataManager uriManager, out SecurityToken rToken, bool isRefreshToken = false)
 		{
 			try
 			{
-				rToken = ValidateToken(jwt, options, uriManager);
+				rToken = ValidateToken(jwt, options, uriManager, isRefreshToken);
 				return true;
 			}
 			catch (Exception)
@@ -27,13 +27,13 @@ namespace Keycloak.IdentityModel.Utilities
 			}
 		}
 
-		public async Task<SecurityToken> ValidateTokenAsync(string jwt, IKeycloakParameters options)
+		public async Task<SecurityToken> ValidateTokenAsync(string jwt, IKeycloakParameters options, bool isRefreshToken = false)
 		{
 			var uriManager = await OidcDataManager.GetCachedContextAsync(options);
-			return ValidateToken(jwt, options, uriManager);
+			return ValidateToken(jwt, options, uriManager, isRefreshToken);
 		}
 
-		public SecurityToken ValidateToken(string jwt, IKeycloakParameters options, OidcDataManager uriManager)
+		public SecurityToken ValidateToken(string jwt, IKeycloakParameters options, OidcDataManager uriManager, bool isRefreshToken = false)
 		{
 			var tokenValidationParameters = new TokenValidationParameters
 			{
@@ -50,7 +50,8 @@ namespace Keycloak.IdentityModel.Utilities
 				AuthenticationType = options.AuthenticationType // Not used
 			};
 
-			return ValidateToken(jwt, tokenValidationParameters);
+		    bool disableSignatureValidation = isRefreshToken && options.DisableRefreshTokenSignatureValidation;
+		    return ValidateToken(jwt, tokenValidationParameters, disableSignatureValidation);
 		}
 
 		protected bool TryValidateToken(string securityToken, TokenValidationParameters validationParameters,
@@ -58,7 +59,7 @@ namespace Keycloak.IdentityModel.Utilities
 		{
 			try
 			{
-				rToken = ValidateToken(securityToken, validationParameters);
+				rToken = ValidateToken(securityToken, validationParameters, false);
 				return true;
 			}
 			catch (Exception)
@@ -68,7 +69,7 @@ namespace Keycloak.IdentityModel.Utilities
 			}
 		}
 
-		protected SecurityToken ValidateToken(string securityToken, TokenValidationParameters validationParameters)
+		protected SecurityToken ValidateToken(string securityToken, TokenValidationParameters validationParameters, bool disableSignatureValidation)
 		{
 			////////////////////////////////
 			// Copied from MS Source Code //
@@ -90,12 +91,25 @@ namespace Keycloak.IdentityModel.Utilities
 						securityToken.Length, MaximumTokenSizeInBytes));
 			}
 
-			var jwt = ValidateSignature(securityToken, validationParameters);
+		    JwtSecurityToken jwt;
+            if (!disableSignatureValidation)
+		    {
+		        // For access & id tokens, parse the token and validate signature.
+		        jwt = ValidateSignature(securityToken, validationParameters);
 
-			if (jwt.SigningKey != null)
-			{
-				ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
-			}
+		        if (jwt.SigningKey != null)
+		        {
+		            ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
+		        }
+            }
+		    else
+            {
+                // Disabling signature for refresh tokens.
+                // This is an option that can be used to fix compatibility with Keycloak v4.5 that switched to use HS256 encryption for Refresh tokens (before it as RS256, the same as for Access tokens)
+                // Refresh tokens should not be necessary to validate, as they should only be used by sending it back to Keycloak server when necessary. Keycloak server itself validates refresh tokens. The applications should not use the information in the Refresh token.
+                // Ref: https://issues.jboss.org/browse/KEYCLOAK-4622
+                jwt = ReadJwtToken(securityToken);
+            }
 
 			DateTime? notBefore = null;
 			if (jwt.Payload.Nbf != null)

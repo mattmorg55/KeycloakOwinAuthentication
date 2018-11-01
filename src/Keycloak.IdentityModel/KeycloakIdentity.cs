@@ -456,7 +456,7 @@ namespace Keycloak.IdentityModel
 			if (idToken != null)
 				idSecurityToken = tokenHandler.ValidateToken(idToken, _parameters, uriManager);
 			if (refreshToken != null)
-				refreshSecurityToken = tokenHandler.ValidateToken(refreshToken, _parameters, uriManager);
+				refreshSecurityToken = tokenHandler.ValidateToken(refreshToken, _parameters, uriManager, isRefreshToken: true);
 
 			// Save to this object
 			// TODO: Convert to MS claims parsing in token handler

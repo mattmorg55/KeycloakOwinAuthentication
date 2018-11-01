@@ -20,5 +20,6 @@ namespace Keycloak.IdentityModel.Models.Configuration
         TimeSpan MetadataRefreshInterval { get; }
         string CallbackPath { get; }
         string ResponseType { get; }
+        bool DisableRefreshTokenSignatureValidation { get; }
     }
 }

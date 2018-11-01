@@ -130,5 +130,18 @@ namespace Keycloak.IdentityModel.Models.Configuration
 
         public string CallbackPath { get; set; }
         public string ResponseType { get; set; }
+
+        /// <summary>
+        ///     OPTIONAL.ADV: Disable signature validation of Refresh tokens.
+        /// </summary>
+        /// <remarks>
+        ///     - In Keycloak server v4.5, it was decided to change encryption algorithm of Refresh tokens from RS256 to HS256.
+        ///       Ref: https://issues.jboss.org/browse/KEYCLOAK-4622
+        ///       This lead to an issue with this library that validates both Access and Refresh tokens with RS256.
+        ///       Setting this option to true will disable validation of Refresh token (but keep validation for Access token).
+        ///       As the application should not use the contents of the Refresh tokens, only send it back to the Keycloak server (which will validate it), it should be safe to disable it.
+        ///     - Default: false
+        /// </remarks>
+        public bool DisableRefreshTokenSignatureValidation { get; set; } = false;
     }
 }
