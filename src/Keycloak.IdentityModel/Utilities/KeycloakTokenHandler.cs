@@ -50,8 +50,8 @@ namespace Keycloak.IdentityModel.Utilities
 				AuthenticationType = options.AuthenticationType // Not used
 			};
 
-		    bool disableSignatureValidation = isRefreshToken && options.DisableRefreshTokenSignatureValidation;
-		    return ValidateToken(jwt, tokenValidationParameters, disableSignatureValidation);
+			bool disableSignatureValidation = isRefreshToken && options.DisableRefreshTokenSignatureValidation;
+			return ValidateToken(jwt, tokenValidationParameters, disableSignatureValidation);
 		}
 
 		protected bool TryValidateToken(string securityToken, TokenValidationParameters validationParameters,
@@ -91,25 +91,25 @@ namespace Keycloak.IdentityModel.Utilities
 						securityToken.Length, MaximumTokenSizeInBytes));
 			}
 
-		    JwtSecurityToken jwt;
-            if (!disableSignatureValidation)
-		    {
-		        // For access & id tokens, parse the token and validate signature.
-		        jwt = ValidateSignature(securityToken, validationParameters);
+		    	JwtSecurityToken jwt;
+			if (!disableSignatureValidation)
+				{
+					// For access & id tokens, parse the token and validate signature.
+					jwt = ValidateSignature(securityToken, validationParameters);
 
-		        if (jwt.SigningKey != null)
-		        {
-		            ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
-		        }
-            }
-		    else
-            {
-                // Disabling signature for refresh tokens.
-                // This is an option that can be used to fix compatibility with Keycloak v4.5 that switched to use HS256 encryption for Refresh tokens (before it as RS256, the same as for Access tokens)
-                // Refresh tokens should not be necessary to validate, as they should only be used by sending it back to Keycloak server when necessary. Keycloak server itself validates refresh tokens. The applications should not use the information in the Refresh token.
-                // Ref: https://issues.jboss.org/browse/KEYCLOAK-4622
-                jwt = ReadJwtToken(securityToken);
-            }
+					if (jwt.SigningKey != null)
+					{
+					ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
+					}
+			}
+				else
+			{
+				// Disabling signature for refresh tokens.
+				// This is an option that can be used to fix compatibility with Keycloak v4.5 that switched to use HS256 encryption for Refresh tokens (before it as RS256, the same as for Access tokens)
+				// Refresh tokens should not be necessary to validate, as they should only be used by sending it back to Keycloak server when necessary. Keycloak server itself validates refresh tokens. The applications should not use the information in the Refresh token.
+				// Ref: https://issues.jboss.org/browse/KEYCLOAK-4622
+				jwt = ReadJwtToken(securityToken);
+			}
 
 			DateTime? notBefore = null;
 			if (jwt.Payload.Nbf != null)

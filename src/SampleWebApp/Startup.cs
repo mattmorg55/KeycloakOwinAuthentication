@@ -38,7 +38,7 @@ namespace SampleWebApp
 				DisableIssuerValidation = false,
 				DisableAudienceValidation = false,
 
-                // DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
+                		// DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
 
 				TokenClockSkew = TimeSpan.FromSeconds(2)
 			});
