@@ -38,9 +38,10 @@ namespace SampleWebApp
 				DisableIssuerValidation = false,
 				DisableAudienceValidation = false,
 
-                		// DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
+			    // DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
+			    // AuthResponseErrorRedirectUrl = "/keycloak-authenticaion-error.html", //Redirect (instead of exception) when Keycloak returns error during authentication. Will include "error" query parameter.
 
-				TokenClockSkew = TimeSpan.FromSeconds(2)
+                TokenClockSkew = TimeSpan.FromSeconds(2)
 			});
 		}
 	}

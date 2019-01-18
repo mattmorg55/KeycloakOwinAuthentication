@@ -143,5 +143,15 @@ namespace Keycloak.IdentityModel.Models.Configuration
         ///     - Default: false
         /// </remarks>
         public bool DisableRefreshTokenSignatureValidation { get; set; } = false;
+
+
+        /// <summary>
+        ///     OPTIONAL: The absolute or relative URL for users to be redirected to if the authorization response from Keycloak indicated unsuccessful authorization (query parameter "error")
+        /// </summary>
+        /// <remarks>
+        ///     - Default: If not specified, an exception will be thrown if and error from Keycloak authentication is received.
+        /// </remarks>
+        public string AuthResponseErrorRedirectUrl { get; set; }
+
     }
 }

@@ -11,9 +11,12 @@ namespace Keycloak.IdentityModel.Models.Responses
         {
             InitFromRequest(HttpUtility.ParseQueryString(query));
 
-            if (!Validate())
+            if (IsSuccessfulResponse())
             {
-                throw new ArgumentException("Invalid query string used to instantiate an AuthorizationResponse");
+                if (!ValidateCodeAndState())
+                {
+                    throw new ArgumentException("Invalid query string used to instantiate an AuthorizationResponse");
+                }
             }
         }
 
@@ -28,7 +31,7 @@ namespace Keycloak.IdentityModel.Models.Responses
             State = authResult.Get(OpenIdConnectParameterNames.State);
         }
 
-        public bool Validate()
+        public bool ValidateCodeAndState()
         {
             return !string.IsNullOrWhiteSpace(Code) && !string.IsNullOrWhiteSpace(State);
         }
