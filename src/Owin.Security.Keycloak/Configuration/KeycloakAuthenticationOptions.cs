@@ -206,6 +206,19 @@ namespace Owin.Security.Keycloak
         public bool DisableRefreshTokenSignatureValidation { get; set; } = false;
 
         /// <summary>
+        ///     OPTIONAL.ADV: Disable all validation of Refresh tokens.
+        /// </summary>
+        /// <remarks>
+        ///     - In Keycloak server somewhere between v4.6-4.8, it was decided that the contents of the "aud" claim in Refresh tokens to contain the Keycloak Realm URL instead of the Keycloak ClientId.
+        ///       This lead to an issue with this library that validates the "aud" claim in Refresh tokens to contain the ClientId.
+        ///       Setting this option to true will disable ALL validation of Refresh token (but keep validation for ID/Access token).
+        ///       As the application should not use the contents of the Refresh tokens, only send it back to the Keycloak server (which will validate it), it should be safe to disable it.
+        ///       This option overrides and can be used instead of DisableRefreshTokenSignatureValidation.
+        ///     - Default: false
+        /// </remarks>
+        public bool DisableAllRefreshTokenValidation { get; set; }
+
+        /// <summary>
         ///     OPTIONAL: The absolute or relative URL for users to be redirected to if the authorization response from Keycloak indicated unsuccessful authorization (query parameter "error")
         /// </summary>
         /// <remarks>

@@ -21,7 +21,7 @@ namespace Keycloak.IdentityModel.Models.Configuration
         string CallbackPath { get; }
         string ResponseType { get; }
         bool DisableRefreshTokenSignatureValidation { get; }
+        bool DisableAllRefreshTokenValidation { get; }
         string AuthResponseErrorRedirectUrl { get; }
-
     }
 }

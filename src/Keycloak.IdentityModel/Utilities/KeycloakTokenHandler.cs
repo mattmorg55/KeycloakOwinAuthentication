@@ -50,8 +50,15 @@ namespace Keycloak.IdentityModel.Utilities
 				AuthenticationType = options.AuthenticationType // Not used
 			};
 
-			bool disableSignatureValidation = isRefreshToken && options.DisableRefreshTokenSignatureValidation;
-			return ValidateToken(jwt, tokenValidationParameters, disableSignatureValidation);
+			// In Keycloak v4.x, the Refresh Token should not be required to validate by the application. The changed behaviour of the "aud" claim in the Refresh Token throwed an exception in the validation code (the "aud" is set to the Realm URL instead of ClientId)
+			// The client application should not use the Refresh Token for other than requesting a new Access Token from the Keycloak server.
+			// The Keycloak server will validate Refresh Tokens sent to it. Therefore it is safe to skip validation of the Refresh Token in the client application.
+			bool disableAllValidation = isRefreshToken && options.DisableAllRefreshTokenValidation;
+			if (disableAllValidation)
+				return ReadJwtToken(jwt);
+
+			bool disableOnlySignatureValidation = isRefreshToken && options.DisableRefreshTokenSignatureValidation;
+			return ValidateToken(jwt, tokenValidationParameters, disableOnlySignatureValidation);
 		}
 
 		protected bool TryValidateToken(string securityToken, TokenValidationParameters validationParameters,
@@ -99,7 +106,7 @@ namespace Keycloak.IdentityModel.Utilities
 
 					if (jwt.SigningKey != null)
 					{
-					ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
+						ValidateIssuerSecurityKey(jwt.SigningKey, jwt, validationParameters);
 					}
 			}
 				else

@@ -38,10 +38,12 @@ namespace SampleWebApp
 				DisableIssuerValidation = false,
 				DisableAudienceValidation = false,
 
-			    // DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
-			    // AuthResponseErrorRedirectUrl = "/keycloak-authenticaion-error.html", //Redirect (instead of exception) when Keycloak returns error during authentication. Will include "error" query parameter.
+				// DisableRefreshTokenSignatureValidation = true, // Fix for Keycloak server v4.5
+				// DisableAllRefreshTokenValidation = true, // Fix for Keycloak server v4.6-4.8,  overrides DisableRefreshTokenSignatureValidation. The content of Refresh token was changed. Refresh token should not be used by the client application other than sending it to the Keycloak server to get a new Access token (where Keycloak server will validate it) - therefore validation in client application can be skipped.
 
-                TokenClockSkew = TimeSpan.FromSeconds(2)
+				// AuthResponseErrorRedirectUrl = "/keycloak-authenticaion-error.html", //Redirect (instead of exception) when Keycloak returns error during authentication. Will include "error" query parameter.
+
+				TokenClockSkew = TimeSpan.FromSeconds(2)
 			});
 		}
 	}
