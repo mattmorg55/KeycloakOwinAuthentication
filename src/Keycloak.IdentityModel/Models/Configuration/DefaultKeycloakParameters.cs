@@ -164,6 +164,18 @@ namespace Keycloak.IdentityModel.Models.Configuration
         ///     - Default: If not specified, an exception will be thrown if and error from Keycloak authentication is received.
         /// </remarks>
         public string AuthResponseErrorRedirectUrl { get; set; }
+        /// <summary>
+        /// OPTIONAL: Query param for login page in order to get the desired locale login page, sending ui_locales query parameter
+        /// By default keycloak will server the login page in this priority
+        /// 1. kc_locale query parameter
+        /// 2. KEYCLOAK_LOCALE cookie value
+        /// 3. User’s preferred locale if a user instance is available
+        /// 4. ui_locales query parameter
+        /// 5. Accept-Language request header
+        /// 6. Realm’s default language
+        /// </summary>
+
+        public string UiLocales { get; set; }
 
     }
 }
