@@ -278,6 +278,9 @@ namespace Keycloak.IdentityModel.Utilities
             if (!string.IsNullOrWhiteSpace(_options.IdentityProvider))
                 parameters.Add(Constants.KeycloakParameters.IdpHint, _options.IdentityProvider);
 
+            if (!string.IsNullOrWhiteSpace(_options.UiLocales))
+                parameters.Add(Protocols.OpenIdConnectParameterNames.UiLocales, _options.UiLocales);
+
             return new FormUrlEncodedContent(parameters);
         }
 
